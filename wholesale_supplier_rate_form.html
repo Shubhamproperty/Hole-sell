@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wholesale Supplier Rate Form</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6f8;color:#18212b;font-family:Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:18px 12px 40px}
+header{background:#153b63;color:#fff;padding:22px 18px;border-radius:16px;margin-bottom:16px}
+h1{font-size:23px;margin:0 0 7px}header p{margin:0;color:#dce8f4;font-size:14px;line-height:1.5}
+.card{background:#fff;border:1px solid #e1e6eb;border-radius:14px;padding:16px;margin-bottom:14px}
+h2{font-size:18px;margin:0 0 14px}
+label{display:block;font-size:13px;font-weight:700;margin:0 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd3dc;border-radius:9px;font-size:16px;background:#fff;color:#17212b}
+.field{margin-bottom:13px}
+.product{border:1px solid #e4e9ee;border-radius:11px;padding:12px;margin:10px 0}
+.product-name{font-weight:700;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.small{font-size:12px;color:#647282;line-height:1.5}
+button{width:100%;border:0;border-radius:11px;padding:15px;font-size:16px;font-weight:700;background:#16834b;color:#fff;cursor:pointer}
+button.secondary{background:#153b63;margin-top:10px}
+button:active{opacity:.85}
+.notice{background:#fff8e7;border:1px solid #f1d89c;padding:12px;border-radius:10px;font-size:13px;line-height:1.5}
+@media(max-width:420px){.grid{grid-template-columns:1fr 1fr}h1{font-size:21px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Wholesale Supplier Rate Form</h1>
+<p>कृपया जिन सामानों का व्यापार करते हैं, उनकी पैकिंग और होलसेल रेट भरें। जो सामान उपलब्ध नहीं है उसे खाली छोड़ दें।</p>
+</header>
+
+<form id="rateForm">
+<section class="card">
+<h2>व्यापारी की जानकारी</h2>
+<div class="field"><label for="seller">व्यापारी / दुकान का नाम *</label><input id="seller" required placeholder="दुकान या व्यापारी का नाम"></div>
+<div class="field"><label for="phone">मोबाइल नंबर *</label><input id="phone" required inputmode="tel" placeholder="10 अंकों का मोबाइल नंबर"></div>
+<div class="field"><label for="area">शहर / बाजार</label><input id="area" placeholder="शहर या बाजार का नाम"></div>
+</section>
+
+<section class="card">
+<h2>प्रोडक्ट की पैकिंग और रेट</h2>
+<p class="small">हर सामान के लिए पैकिंग का प्रकार, एक पेटी/बोरी में कितने पैकेट या पीस हैं, और उस पूरी पैकिंग का होलसेल रेट लिखें।</p>
+<div id="products"></div>
+</section>
+
+<section class="card">
+<div class="field"><label for="notes">कोई अन्य जानकारी (वैकल्पिक)</label><textarea id="notes" rows="3" placeholder="जैसे न्यूनतम ऑर्डर, डिलीवरी आदि"></textarea></div>
+<div class="notice">ध्यान दें: अभी यह शुरुआती फॉर्म है। Submit करने पर भरी हुई रेट लिस्ट WhatsApp के जरिए आपके चुने हुए चैट में साझा होगी। इसे अपने आप ऑनलाइन डेटाबेस में सेव करने के लिए वेबसाइट/डेटाबेस से जोड़ना अगला चरण होगा।</div>
+</section>
+<button type="submit">WhatsApp पर रेट लिस्ट भेजें</button>
+<button type="button" class="secondary" id="download">रेट लिस्ट डाउनलोड करें (TXT)</button>
+</form>
+</div>
+<script>
+const names = [
+"Conect","Gold","Gold Badi","Indiment","Bistal","Advans","Dilite",
+"American Choti","American Badi","Rajshri 10","Rajshri 20","Rajshri 40",
+"Rajshri 60","Rajshri 100","Bhola Menaka Hara","Bhola Menaka Laal",
+"Anand Churan","Gogo"
+];
+const host = document.getElementById('products');
+names.forEach((name,i)=>{
+ const box=document.createElement('div'); box.className='product';
+ box.innerHTML=`
+ <div class="product-name">${i+1}. ${name}</div>
+ <div class="grid">
+  <div><label>पैकिंग का प्रकार</label><select data-k="unit"><option value="">चुनें</option><option>पेटी</option><option>बोरी</option><option>डिब्बा</option><option>पैकेट</option><option>पीस</option><option>क्रेट</option><option>अन्य</option></select></div>
+  <div><label>एक पैकिंग में कितने?</label><input data-k="count" inputmode="decimal" placeholder="जैसे 20 पैकेट"></div>
+  <div><label>एक पैकेट में पीस</label><input data-k="pieces" inputmode="decimal" placeholder="जैसे 10"></div>
+  <div><label>पूरी पैकिंग का रेट (₹)</label><input data-k="price" inputmode="decimal" placeholder="जैसे 1250"></div>
+ </div>`;
+ box.dataset.name=name; host.appendChild(box);
+});
+function makeMessage(){
+ const seller=document.getElementById('seller').value.trim();
+ const phone=document.getElementById('phone').value.trim();
+ const area=document.getElementById('area').value.trim();
+ const notes=document.getElementById('notes').value.trim();
+ let lines=["WHOLESALE RATE LIST","व्यापारी: "+seller,"मोबाइल: "+phone];
+ if(area) lines.push("शहर/बाजार: "+area);
+ lines.push("","प्रोडक्ट विवरण:");
+ document.querySelectorAll('.product').forEach(box=>{
+  const vals={}; box.querySelectorAll('[data-k]').forEach(el=>vals[el.dataset.k]=el.value.trim());
+  if(Object.values(vals).some(Boolean)){
+   lines.push("- "+box.dataset.name+
+    (vals.unit?" | पैकिंग: "+vals.unit:"")+
+    (vals.count?" | एक पैकिंग में: "+vals.count:"")+
+    (vals.pieces?" | प्रति पैकेट पीस: "+vals.pieces:"")+
+    (vals.price?" | पैकिंग रेट: ₹"+vals.price:""));
+  }
+ });
+ if(notes) lines.push("","अन्य जानकारी: "+notes);
+ lines.push("","धन्यवाद");
+ return lines.join("\n");
+}
+document.getElementById('rateForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ if(!document.getElementById('seller').value.trim()||!document.getElementById('phone').value.trim()){
+  alert("कृपया व्यापारी का नाम और मोबाइल नंबर भरें।"); return;
+ }
+ const msg=makeMessage();
+ window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
+});
+document.getElementById('download').addEventListener('click',()=>{
+ if(!document.getElementById('seller').value.trim()){alert("पहले व्यापारी का नाम भरें।");return;}
+ const blob=new Blob([makeMessage()],{type:"text/plain;charset=utf-8"});
+ const url=URL.createObjectURL(blob); const a=document.createElement('a');
+ a.href=url;a.download="wholesale-rate-list.txt";a.click();URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
