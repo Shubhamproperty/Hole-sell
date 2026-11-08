@@ -102,8 +102,9 @@ document.getElementById('rateForm').addEventListener('submit',e=>{
   alert("कृपया व्यापारी का नाम और मोबाइल नंबर भरें।"); return;
  }
  const msg=makeMessage();
- window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
-});
+
+ window.location.href = "https://wa.me/?text="+encodeURIComponent(msg);
+ 
 document.getElementById('download').addEventListener('click',()=>{
  if(!document.getElementById('seller').value.trim()){alert("पहले व्यापारी का नाम भरें।");return;}
  const blob=new Blob([makeMessage()],{type:"text/plain;charset=utf-8"});
